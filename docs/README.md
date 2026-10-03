@@ -10,24 +10,23 @@ MamboUI is the small, shared [Ratatui](https://ratatui.rs) design layer for Proj
 
 Version `0.1.0` establishes the initial component contract. MamboUI is usable from Git but is not yet published to crates.io.
 
-## Start here
+## Motivation
 
-| Goal | Guide |
-|---|---|
-| Add MamboUI to a Rust application | [Install](#install) |
-| Render the shared shell and panels | [Quick start](#quick-start) |
-| Choose or extend a component | [Design and developer guide](Design%20and%20Developer%20Guide.md) |
-| Browse the public API | [Local rustdoc](#demo-and-checks) |
-| Read the public Wiki page | [projectmambo.org/mamboui/](https://projectmambo.org/mamboui/) |
+Project Mambo applications should feel related without rebuilding basic terminal UI decisions in every repository. MamboUI centralizes the small set of shared primitives that improve clarity, accessibility, and consistency while keeping each product in control of its screens.
 
-## Design principles
+## Status
 
-- Clarity first: every state has a text label, not colour alone.
-- Ratatui-native: components compose with standard `Frame`, `Rect`, and widget types instead of introducing an application framework.
-- Responsive by default: the shell preserves space on narrow terminals and two-column views stack when they no longer fit.
-- Small public API: add a primitive only when more than one Mambo product needs the same behaviour.
+MamboUI `0.1.0` is ready for Project Mambo Ratatui applications through its tagged Git release. Its public component contract is intentionally small and may grow when a reusable need is demonstrated in more than one product.
 
-## Install
+## User stories
+
+- As a Mambo application user, I can recognize navigation, status, and keyboard help across products.
+- As a Mambo developer, I can assemble a clear terminal screen from tested shared components.
+- As a maintainer, I can improve a common interaction once and adopt it consistently across applications.
+
+## Getting started
+
+### Install
 
 Until the crate is published, use the Git repository:
 
@@ -45,7 +44,7 @@ mambo-ui = { path = "../MamboUI" }
 
 MamboUI re-exports its exact Ratatui dependency as `mambo_ui::ratatui`, which prevents widget-type mismatches between Ratatui versions.
 
-## Quick start
+### Quick start
 
 ```rust
 use mambo_ui::{Panel, Shell, Theme};
@@ -66,6 +65,13 @@ fn draw(frame: &mut Frame<'_>) {
 }
 ```
 
+## Design principles
+
+- Clarity first: every state has a text label, not colour alone.
+- Ratatui-native: components compose with standard `Frame`, `Rect`, and widget types instead of introducing an application framework.
+- Responsive by default: the shell preserves space on narrow terminals and two-column views stack when they no longer fit.
+- Small public API: add a primitive only when more than one Mambo product needs the same behaviour.
+
 ## Components
 
 | API | Purpose |
@@ -81,7 +87,17 @@ fn draw(frame: &mut Frame<'_>) {
 
 All components accept a `Theme`; its fields are public for focused product customization. Prefer the default palette so Mambo applications remain recognizable.
 
-## Repository layout
+## Documentation
+
+| Goal | Guide |
+|---|---|
+| Add MamboUI to a Rust application | [Install](#install) |
+| Render the shared shell and panels | [Quick start](#quick-start) |
+| Choose or extend a component | [Design and developer guide](Design%20and%20Developer%20Guide.md) |
+| Browse the public API | [Local rustdoc](#validation) |
+| Read the public Wiki page | [projectmambo.org/mamboui/](https://projectmambo.org/mamboui/) |
+
+## Project structure
 
 ```text
 src/theme.rs          palette and semantic styles
@@ -92,7 +108,7 @@ docs/                 synchronized user and developer guides
 .github/workflows/    formatting, test, Clippy, and rustdoc checks
 ```
 
-## Demo and checks
+## Validation
 
 Run the interactive component demo:
 
@@ -109,7 +125,7 @@ cargo clippy --all-targets -- -D warnings
 RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
 ```
 
-## Contributing
+## Development
 
 Keep components product-neutral, keyboard-friendly, and understandable without colour. Include a focused render test for new behaviour and update the demo when a new public primitive is added. Author documentation in `notes/Docs/Projects/MamboUI/`, then synchronize it with `notes/Scripts/sync_docs.js`.
 
