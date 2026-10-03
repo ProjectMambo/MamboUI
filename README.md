@@ -1,10 +1,10 @@
 # MamboUI
 
 [![CI](https://github.com/ProjectMambo/MamboUI/actions/workflows/ci.yml/badge.svg)](https://github.com/ProjectMambo/MamboUI/actions/workflows/ci.yml)
-[![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-7a5fff.svg)](https://github.com/ProjectMambo/MamboUI)
-[![Rust 1.85+](https://img.shields.io/badge/rust-1.85%2B-orange.svg)](https://www.rust-lang.org)
-[![Ratatui 0.29](https://img.shields.io/badge/ratatui-0.29-blue.svg)](https://ratatui.rs)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/ProjectMambo/MamboUI/blob/main/LICENSE)
+[![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-7a5fff.svg?style=flat-square)](https://github.com/ProjectMambo/MamboUI)
+[![Rust 1.85+](https://img.shields.io/badge/rust-1.85%2B-orange.svg?style=flat-square)](https://www.rust-lang.org)
+[![Ratatui 0.29](https://img.shields.io/badge/ratatui-0.29-blue.svg?style=flat-square)](https://ratatui.rs)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](https://github.com/ProjectMambo/MamboUI/blob/main/LICENSE)
 
 MamboUI is the small, shared [Ratatui](https://ratatui.rs) design layer for Project Mambo terminal applications. It gives Mambo products a consistent app shell, accessible palette, feedback states, keyboard help, panels, lists, and responsive layouts while leaving product-specific screens in the product repository.
 
@@ -113,16 +113,16 @@ docs/                 synchronized user and developer guides
 Run the interactive component demo:
 
 ```bash
-cargo run --example demo
+cargo run --locked --example demo
 ```
 
 Run the same checks used by CI:
 
 ```bash
 cargo fmt --check
-cargo test --all-targets
-cargo clippy --all-targets -- -D warnings
-RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
+cargo test --locked --all-targets
+cargo clippy --locked --all-targets -- -D warnings
+RUSTDOCFLAGS="-D warnings" cargo doc --locked --no-deps
 ```
 
 ## Development
