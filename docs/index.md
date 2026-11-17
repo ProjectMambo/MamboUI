@@ -8,13 +8,13 @@ order: 100
 
 # MamboUI
 
-MamboUI is Project Mambo's shared terminal design layer. It provides a clear, accessible theme and small Ratatui-native components without taking ownership of application state or business logic.
+MamboUI is Project Mambo's shared terminal presentation layer. It maps MamboColour's semantic MamboOrche schemes into Ratatui and provides accessible, Ratatui-native components without taking ownership of application state or business logic.
 
 ::button{label="Source code" href="https://github.com/ProjectMambo/MamboUI" variant="secondary" external=true}
 
-## Current release
+## Current status
 
-Version `0.1.0` establishes the initial theme, shell, panels, status and help elements, selection list, empty state, and responsive two-column helper.
+Version `0.2.0` is the active source contract. It adds dark and light MamboColour-backed themes, curated crate-root exports, selectable list and table styling, shell and panel chrome, status and help elements, empty states, responsive columns, and bounds-safe overlay placement. The tagged `v0.1.0` release remains available while `0.2.0` is not yet published or tagged.
 
 ## Documentation
 

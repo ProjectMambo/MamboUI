@@ -1,5 +1,23 @@
 use ratatui::layout::Rect;
 
+/// Returns a rectangle of at most the requested size, centered inside `area`.
+///
+/// Empty input stays empty. This helper performs no drawing; render
+/// [`Clear`](ratatui::widgets::Clear) first when using the result as an overlay.
+#[must_use]
+pub fn centered_rect(area: Rect, requested_width: u16, requested_height: u16) -> Rect {
+    let width = requested_width.min(area.width);
+    let height = requested_height.min(area.height);
+
+    Rect::new(
+        area.x.saturating_add(area.width.saturating_sub(width) / 2),
+        area.y
+            .saturating_add(area.height.saturating_sub(height) / 2),
+        width,
+        height,
+    )
+}
+
 /// Splits an area into two responsive columns.
 ///
 /// The returned rectangles sit side by side with a one-cell gap when both can
@@ -53,5 +71,17 @@ mod tests {
 
         assert_eq!(top, Rect::new(2, 3, 79, 10));
         assert_eq!(bottom, Rect::new(2, 13, 79, 11));
+    }
+
+    #[test]
+    fn centered_rect_never_exceeds_its_parent() {
+        let parent = Rect::new(10, 20, 8, 4);
+
+        assert_eq!(centered_rect(parent, 6, 2), Rect::new(11, 21, 6, 2));
+        assert_eq!(centered_rect(parent, 60, 20), parent);
+        assert_eq!(
+            centered_rect(Rect::new(2, 3, 0, 0), 5, 5),
+            Rect::new(2, 3, 0, 0)
+        );
     }
 }
