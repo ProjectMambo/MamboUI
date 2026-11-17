@@ -14,9 +14,12 @@ MamboUI owns presentation patterns that should look and behave the same in more 
 |---|---|
 | Semantic MamboOrche values and contrast | MamboColour |
 | Mapping semantic colours into Ratatui, shared visual styles, chrome, and small layout helpers | MamboUI |
-| Terminal setup and restore, event loop, input mapping, focus and selection state, navigation, commands, persistence, async work, and business rules | Consuming application |
+| Terminal setup and restore, event loop, input mapping, focus and selection state, navigation, application core, persistence, async work, and business rules | Consuming application |
+| Typed AI tool interface, normally MCP, plus any optional CLI | Consuming application |
 
 Ratatui types deliberately cross the public boundary because consumers compose MamboUI with native widgets. MamboColour types do not cross it; `Theme` is the adapter between the palette provider and Ratatui.
+
+MamboUI does not implement MCP or application tools. A consuming application exposes its domain queries and mutations as typed AI tools over the same core used by the TUI, following the MamboDocs interface standard.
 
 ## Compose a screen
 
