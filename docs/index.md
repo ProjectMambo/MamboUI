@@ -14,7 +14,7 @@ MamboUI is Project Mambo's shared terminal presentation layer. It maps MamboColo
 
 ## Current status
 
-Version `0.2.0` is the active source contract. It adds dark and light MamboColour-backed themes, curated crate-root exports, selectable list and table styling, shell and panel chrome, status and help elements, empty states, responsive columns, and bounds-safe overlay placement. The tagged `v0.1.0` release remains available while `0.2.0` is not yet published or tagged.
+Version `0.2.0` is the active source contract. It adds dark and light MamboColour-backed themes, curated crate-root exports, selectable list and table styling, shell and panel chrome, status and help elements, empty states, responsive columns, and bounds-safe overlay placement. The tagged `v0.1.0` release remains available while `0.2.0` is not yet published or tagged. MamboFinance is the primary proving ground; its concrete needs pressure-test the existing API, while Finance-specific state and speculative abstractions stay in Finance.
 
 ## Documentation
 

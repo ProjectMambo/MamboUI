@@ -16,7 +16,7 @@ Project Mambo applications should feel related without rebuilding basic terminal
 
 ## Status
 
-MamboUI `0.2.0` is active source for Project Mambo Ratatui applications. The tagged `v0.1.0` release remains available for existing consumers; new `0.2.0` consumers should pin a reviewed commit until a release is published. The public contract is intentionally small and grows only when more than one product demonstrates the same presentation need.
+MamboUI `0.2.0` is active source for Project Mambo Ratatui applications. The tagged `v0.1.0` release remains available for existing consumers; new `0.2.0` consumers should pin a reviewed commit until a release is published. MamboFinance is the primary proving ground: its real screens drive fixes and refinements to the existing contract, while new abstractions remain local until another Ratatui application demonstrates the same presentation rule.
 
 ## User stories
 
@@ -109,6 +109,7 @@ The crate root is the complete supported MamboUI API. Internal modules are priva
 | Render the shared shell and panels | [Quick start](#quick-start) |
 | Browse every public item and migration note | [API reference](API.md) |
 | Choose or extend a component | [Design and developer guide](Design%20and%20Developer%20Guide.md) |
+| Follow the Finance-led delivery order and compatibility gates | [Development plan](Development%20Plan.md) |
 | Browse the public API | [Local rustdoc](#validation) |
 | Read the public Wiki page | [projectmambo.org/mamboui/](https://projectmambo.org/mamboui/) |
 
@@ -142,7 +143,7 @@ RUSTDOCFLAGS="-D warnings" cargo doc --locked --no-deps
 
 ## Development
 
-Keep components product-neutral, keyboard-friendly, and understandable without colour. MamboUI owns shared presentation only; consuming applications own terminal setup, event loops, navigation, focus and selection state, commands, persistence, async work, and business rules. Include a focused render test for new behaviour and update the demo when a new public primitive is added. Author documentation in `notes/Docs/Projects/MamboUI/`, then synchronize it with `notes/Scripts/sync_docs.js`.
+Keep components product-neutral, keyboard-friendly, and understandable without colour. Use MamboFinance as the primary proving ground, but keep Finance-owned state and workflows in Finance. MamboUI owns shared presentation only; consuming applications own terminal setup, event loops, navigation, focus and selection state, commands, persistence, async work, and business rules. Include a focused render test for new behaviour and update the demo when a new public primitive is added. Author documentation in `notes/Docs/Projects/MamboUI/`, then synchronize it with `notes/Scripts/sync_docs.js`.
 
 ## License
 
