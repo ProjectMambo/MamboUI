@@ -8,7 +8,7 @@ order: 10
 
 # Design and developer guide
 
-MamboUI owns presentation patterns that should look and behave the same in more than one Project Mambo terminal application. It is a view library, not an application framework.
+MamboUI owns presentation patterns that should look and behave the same across Project Mambo terminal applications. It is a view library, not an application framework. MamboFinance is the primary proving ground for the current contract: real Finance use may refine an existing primitive immediately, while a new abstraction stays local until another Ratatui application demonstrates the same presentation rule.
 
 | Boundary | Owner |
 |---|---|
@@ -53,7 +53,7 @@ RGB values define the preferred palette, but semantic meaning comes from the com
 
 ## Add a shared primitive
 
-Add a component only after a second real consumer needs the same presentation rule. Keep it Ratatui-native, accept borrowed data where practical, and leave state transitions with the caller. Prefer a function returning a standard Ratatui widget over a new wrapper type when no shared state or rendering behavior is required.
+Use MamboFinance to find real gaps, not to pre-design a framework. Fix an existing primitive when Finance exposes a product-neutral defect, accessibility failure, or composition problem. Implement a new presentation idea in Finance with native Ratatui first, then move it into MamboUI only after MamboTools or another Ratatui application needs the same rule. Keep it Ratatui-native, accept borrowed data where practical, and leave state transitions with the caller. Prefer a function returning a standard Ratatui widget over a new wrapper type when no shared state or rendering behavior is required.
 
 A public change includes:
 
