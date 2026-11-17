@@ -3,13 +3,24 @@ use ratatui::{
     text::Line,
 };
 
+/// A MamboOrche colour scheme.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum Scheme {
+    /// Dark background with light text.
+    #[default]
+    Dark,
+    /// Light background with dark text.
+    Light,
+}
+
 /// The shared Project Mambo terminal color palette.
 ///
-/// The default palette uses high-contrast foreground/background pairs. UI
-/// components also include text labels and symbols, so color is never the
-/// only way they communicate state. Every field is public so an application
-/// can make a small product-specific adjustment without defining a new theme
-/// abstraction.
+/// [`Theme::new`] maps MamboColour's semantic MamboOrche roles into Ratatui
+/// colours. UI components also include text labels and symbols, so colour is
+/// never the only way they communicate state. The fields stay public for small
+/// product-specific adjustments, but applications should start from a bundled
+/// scheme rather than construct a theme from scratch.
+#[non_exhaustive]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Theme {
     /// Main application background.
@@ -20,23 +31,56 @@ pub struct Theme {
     pub text: Color,
     /// Secondary text color.
     pub muted: Color,
+    /// Tertiary text color.
+    pub subtle: Color,
     /// Default border color.
     pub border: Color,
-    /// Focus and interaction color.
-    pub accent: Color,
-    /// Selected row background.
+    /// Project Mambo brand color.
+    pub brand: Color,
+    /// Text color placed on a brand background.
+    pub on_brand: Color,
+    /// Selection indicator color.
     pub selection: Color,
+    /// Keyboard focus indicator.
+    pub focus: Color,
+    /// General interactive indicator.
+    pub interactive: Color,
     /// Successful operation color.
     pub success: Color,
     /// Caution color.
     pub warning: Color,
     /// Failure color.
     pub error: Color,
-    /// Informational color.
-    pub info: Color,
 }
 
 impl Theme {
+    /// Builds a theme from the matching MamboColour scheme.
+    #[must_use]
+    pub fn new(scheme: Scheme) -> Self {
+        let palette = mambocolour::theme(match scheme {
+            Scheme::Dark => mambocolour::Scheme::Dark,
+            Scheme::Light => mambocolour::Scheme::Light,
+        })
+        .ui();
+
+        Self {
+            background: color(palette.bg()),
+            surface: color(palette.bg_surface()),
+            text: color(palette.fg()),
+            muted: color(palette.fg_muted()),
+            subtle: color(palette.fg_subtle()),
+            border: color(palette.border()),
+            brand: color(palette.brand()),
+            on_brand: color(palette.on_brand()),
+            selection: color(palette.selection()),
+            focus: color(palette.focus()),
+            interactive: color(palette.interactive()),
+            success: color(palette.success()),
+            warning: color(palette.warning()),
+            error: color(palette.error()),
+        }
+    }
+
     /// Returns the base style used for application content.
     #[must_use]
     pub fn base(&self) -> Style {
@@ -53,7 +97,7 @@ impl Theme {
     #[must_use]
     pub fn title(&self) -> Style {
         self.surface_style()
-            .fg(self.accent)
+            .fg(self.brand)
             .add_modifier(Modifier::BOLD)
     }
 
@@ -72,13 +116,16 @@ impl Theme {
     /// Returns the focused border style.
     #[must_use]
     pub fn focused_border(&self) -> Style {
-        self.base().fg(self.accent).add_modifier(Modifier::BOLD)
+        self.base().fg(self.focus).add_modifier(Modifier::BOLD)
     }
 
     /// Returns the selected list-row style.
     #[must_use]
     pub fn selected(&self) -> Style {
-        self.base().bg(self.selection).add_modifier(Modifier::BOLD)
+        self.base()
+            .fg(self.on_brand)
+            .bg(self.brand)
+            .add_modifier(Modifier::BOLD)
     }
 
     /// Styles a title line consistently with the theme.
@@ -90,18 +137,31 @@ impl Theme {
 
 impl Default for Theme {
     fn default() -> Self {
-        Self {
-            background: Color::Rgb(13, 17, 23),
-            surface: Color::Rgb(22, 27, 34),
-            text: Color::Rgb(240, 246, 252),
-            muted: Color::Rgb(139, 148, 158),
-            border: Color::Rgb(139, 148, 158),
-            accent: Color::Rgb(88, 166, 255),
-            selection: Color::Rgb(31, 74, 125),
-            success: Color::Rgb(63, 185, 80),
-            warning: Color::Rgb(210, 153, 34),
-            error: Color::Rgb(248, 81, 73),
-            info: Color::Rgb(88, 166, 255),
-        }
+        Self::new(Scheme::Dark)
+    }
+}
+
+fn color(colour: mambocolour::Colour) -> Color {
+    let [red, green, blue] = colour.rgb();
+    Color::Rgb(red, green, blue)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn schemes_map_mambocolour_roles() {
+        let dark = Theme::new(Scheme::Dark);
+        let light = Theme::new(Scheme::Light);
+
+        assert_eq!(dark.background, Color::Rgb(24, 22, 21));
+        assert_eq!(dark.brand, Color::Rgb(255, 107, 87));
+        assert_eq!(light.background, Color::Rgb(250, 247, 242));
+        assert_eq!(light.text, Color::Rgb(28, 17, 17));
+        assert_eq!(dark.selected().fg, Some(dark.on_brand));
+        assert_eq!(dark.selected().bg, Some(dark.brand));
+        assert_eq!(light.selected().fg, Some(light.on_brand));
+        assert_eq!(light.selected().bg, Some(light.brand));
     }
 }

@@ -1,6 +1,6 @@
 [package]
 name = "mambo-ui"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 rust-version = "1.85"
 description = "Shared ratatui components for Project Mambo terminal applications"
@@ -11,6 +11,7 @@ keywords = ["ratatui", "terminal", "tui", "ui"]
 categories = ["command-line-interface"]
 
 [dependencies]
+mambocolour = { git = "https://github.com/ProjectMambo/MamboColour", rev = "c703092a619b3ee9b05503eaf2a553ae52595d35" }
 ratatui = "0.29"
 
 [dev-dependencies]

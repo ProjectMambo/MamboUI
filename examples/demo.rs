@@ -6,11 +6,11 @@ use crossterm::event::{self, Event, KeyCode, KeyEventKind};
 use mambo_ui::ratatui::{
     DefaultTerminal, Frame,
     layout::{Constraint, Layout},
-    widgets::{ListState, Widget},
+    widgets::{Row, TableState, Widget},
 };
 use mambo_ui::{
-    EmptyState, Help, KeyHint, Panel, Shell, Status, StatusLine, Theme, responsive_columns,
-    selection_list,
+    EmptyState, Help, KeyHint, Panel, Scheme, Shell, Status, StatusLine, Theme, responsive_columns,
+    selection_table,
 };
 
 fn main() -> io::Result<()> {
@@ -21,23 +21,33 @@ fn main() -> io::Result<()> {
 }
 
 fn run(terminal: &mut DefaultTerminal) -> io::Result<()> {
+    let mut scheme = Scheme::Dark;
     loop {
-        terminal.draw(draw)?;
-        if event::poll(Duration::from_millis(250))?
-            && matches!(
-                event::read()?,
-                Event::Key(key)
-                    if key.kind == KeyEventKind::Press
-                        && matches!(key.code, KeyCode::Char('q') | KeyCode::Esc)
-            )
-        {
-            return Ok(());
+        terminal.draw(|frame| draw(frame, scheme))?;
+        if !event::poll(Duration::from_millis(250))? {
+            continue;
+        }
+        let Event::Key(key) = event::read()? else {
+            continue;
+        };
+        if key.kind != KeyEventKind::Press {
+            continue;
+        }
+        match key.code {
+            KeyCode::Char('q') | KeyCode::Esc => return Ok(()),
+            KeyCode::Char('t') => {
+                scheme = match scheme {
+                    Scheme::Dark => Scheme::Light,
+                    Scheme::Light => Scheme::Dark,
+                };
+            }
+            _ => {}
         }
     }
 }
 
-fn draw(frame: &mut Frame<'_>) {
-    let theme = Theme::default();
+fn draw(frame: &mut Frame<'_>, scheme: Scheme) {
+    let theme = Theme::new(scheme);
     let content = Shell::new("MamboUI")
         .subtitle("shared terminal components")
         .footer("Project Mambo")
@@ -53,9 +63,15 @@ fn draw(frame: &mut Frame<'_>) {
     let package_panel = Panel::new("Packages").focused(true).block(&theme);
     let package_content = package_panel.inner(packages);
     frame.render_widget(package_panel, packages);
-    let mut state = ListState::default().with_selected(Some(0));
+    let rows = [
+        Row::new(["MamboTools", "ready"]),
+        Row::new(["MamboFinance", "active"]),
+        Row::new(["MamboUI", "v0.2"]),
+    ];
+    let mut state = TableState::default().with_selected(0);
     frame.render_stateful_widget(
-        selection_list(["MamboTools", "MamboUI", "MamboMeme"], &theme),
+        selection_table(rows, [Constraint::Length(16), Constraint::Min(8)], &theme)
+            .header(Row::new(["Application", "State"]).style(theme.title())),
         package_content,
         &mut state,
     );
@@ -76,6 +92,7 @@ fn draw(frame: &mut Frame<'_>) {
             [
                 KeyHint::new("↑/↓", "select"),
                 KeyHint::new("Enter", "open"),
+                KeyHint::new("t", "theme"),
                 KeyHint::new("q", "quit"),
             ],
             &theme,

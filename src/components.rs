@@ -3,10 +3,10 @@ use std::borrow::Cow;
 use ratatui::{
     Frame,
     buffer::Buffer,
-    layout::{Alignment, Rect},
+    layout::{Alignment, Constraint, Rect},
     style::{Color, Modifier, Style, Stylize},
     text::{Line, Span},
-    widgets::{Block, Borders, List, ListItem, Paragraph, Widget, Wrap},
+    widgets::{Block, Borders, List, ListItem, Paragraph, Row, Table, Widget, Wrap},
 };
 
 use crate::Theme;
@@ -166,7 +166,7 @@ impl<'a> Panel<'a> {
         }
     }
 
-    /// Marks the panel as focused, using the accent border.
+    /// Marks the panel as focused, using the focus border.
     #[must_use]
     pub fn focused(mut self, focused: bool) -> Self {
         self.focused = focused;
@@ -186,7 +186,7 @@ impl<'a> Panel<'a> {
             .borders(Borders::ALL)
             .border_style(border_style)
             .title(Line::styled(self.title, theme.title()))
-            .style(theme.base())
+            .style(theme.surface_style())
     }
 }
 
@@ -278,7 +278,7 @@ impl Status {
     fn color(self, theme: &Theme) -> Color {
         match self {
             Self::Idle => theme.muted,
-            Self::Info => theme.info,
+            Self::Info => theme.interactive,
             Self::Success => theme.success,
             Self::Warning => theme.warning,
             Self::Error => theme.error,
@@ -369,7 +369,7 @@ impl Widget for Help<'_> {
             }
             spans.extend([
                 Span::styled("[", self.theme.muted()),
-                Span::styled(hint.key, self.theme.base().fg(self.theme.accent).bold()),
+                Span::styled(hint.key, self.theme.base().fg(self.theme.brand).bold()),
                 Span::styled("] ", self.theme.muted()),
                 Span::styled(hint.label, self.theme.muted()),
             ]);
@@ -391,10 +391,28 @@ where
     T: Into<Line<'a>>,
 {
     List::new(items.into_iter().map(|item| ListItem::new(item.into())))
-        .style(theme.base())
+        .style(theme.surface_style())
         .highlight_style(theme.selected())
         .highlight_symbol("› ")
         .repeat_highlight_symbol(true)
+}
+
+/// Builds a stateful Ratatui table using Project Mambo selection styling.
+///
+/// The caller owns row content, headings, column sizing, and the
+/// [`TableState`](ratatui::widgets::TableState). Render the result with
+/// [`Frame::render_stateful_widget`].
+pub fn selection_table<'a, R, C>(rows: R, widths: C, theme: &Theme) -> Table<'a>
+where
+    R: IntoIterator,
+    R::Item: Into<Row<'a>>,
+    C: IntoIterator,
+    C::Item: Into<Constraint>,
+{
+    Table::new(rows, widths)
+        .style(theme.surface_style())
+        .row_highlight_style(theme.selected())
+        .highlight_symbol("› ")
 }
 
 fn shell_areas(area: Rect) -> (Rect, Rect, Rect) {
@@ -426,7 +444,11 @@ fn shell_areas(area: Rect) -> (Rect, Rect, Rect) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ratatui::{Terminal, backend::TestBackend, widgets::ListState};
+    use ratatui::{
+        Terminal,
+        backend::TestBackend,
+        widgets::{ListState, TableState},
+    };
 
     #[test]
     fn shell_renders_chrome_and_returns_padded_content() {
@@ -448,6 +470,11 @@ mod tests {
         let buffer = terminal.backend().buffer();
         assert_eq!(row(buffer, 0).trim_end(), "MamboUI  demo");
         assert_eq!(row(buffer, 5).trim_end(), "[q] quit");
+        assert_eq!(buffer.cell((0, 0)).map(|cell| cell.bg), Some(theme.surface));
+        assert_eq!(
+            buffer.cell((0, 1)).map(|cell| cell.bg),
+            Some(theme.background)
+        );
     }
 
     #[test]
@@ -485,6 +512,36 @@ mod tests {
             .draw(|frame| {
                 frame.render_stateful_widget(
                     selection_list(["First", "Second"], &theme),
+                    frame.area(),
+                    &mut state,
+                );
+            })
+            .expect("render succeeds");
+
+        let buffer = terminal.backend().buffer();
+        assert_eq!(row(buffer, 1).trim_end(), "› Second");
+        assert_eq!(
+            buffer.cell((0, 1)).map(|cell| cell.fg),
+            Some(theme.on_brand)
+        );
+        assert_eq!(buffer.cell((0, 1)).map(|cell| cell.bg), Some(theme.brand));
+    }
+
+    #[test]
+    fn selection_table_marks_the_selected_row() {
+        let backend = TestBackend::new(16, 2);
+        let mut terminal = Terminal::new(backend).expect("test terminal");
+        let theme = Theme::default();
+        let mut state = TableState::default().with_selected(1);
+
+        terminal
+            .draw(|frame| {
+                frame.render_stateful_widget(
+                    selection_table(
+                        [Row::new(["First"]), Row::new(["Second"])],
+                        [Constraint::Min(1)],
+                        &theme,
+                    ),
                     frame.area(),
                     &mut state,
                 );
